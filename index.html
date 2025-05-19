@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cover Page Generator (.docx)</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.5/pizzip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.31.2/build/docxtemplater.js"></script>
+
+  <!-- Load PizZip and Docxtemplater in the correct order -->
+  <script src="https://unpkg.com/pizzip@3.1.5/dist/pizzip.min.js"></script>
+  <script src="https://unpkg.com/docxtemplater@3.31.2/build/docxtemplater.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-center mb-6">Cover Page Generator (.docx)</h1>
 
-    <!-- Form -->
     <div class="bg-white p-6 rounded-lg shadow mb-6">
       <div class="grid grid-cols-1 gap-4">
         <input type="text" id="teacher" placeholder="Teacher's Name" class="border p-2 rounded" required />
@@ -40,7 +41,7 @@
 
       try {
         const response = await fetch("template.docx");
-        if (!response.ok) throw new Error("Failed to load template.docx");
+        if (!response.ok) throw new Error("template.docx not found");
         const content = await response.arrayBuffer();
 
         const zip = new PizZip(content);
@@ -54,18 +55,13 @@
           "student's id": studentId,
         });
 
-        try {
-          doc.render();
-        } catch (error) {
-          console.error("Error rendering docx:", error);
-          alert("Error filling the template. Check placeholder names.");
-          return;
-        }
+        doc.render();
 
-        const out = doc.getZip().generate({ type: "blob" });
-        saveAs(out, `CoverPage_${studentId}.docx`);
+        const blob = doc.getZip().generate({ type: "blob" });
+        saveAs(blob, `CoverPage_${studentId}.docx`);
       } catch (error) {
-        alert("Error loading template.docx: " + error.message);
+        console.error("Error:", error);
+        alert("An error occurred: " + error.message);
       }
     }
   </script>
