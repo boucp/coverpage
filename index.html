@@ -6,7 +6,7 @@
   <title>Cover Page Generator (.docx)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.5/pizzip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.31.2/docxtemplater.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.31.2/build/docxtemplater.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
@@ -38,7 +38,6 @@
       const date = document.getElementById("date").value;
       const studentId = document.getElementById("studentId").value;
 
-      // Fetch the template.docx from your GitHub Pages repo
       try {
         const response = await fetch("template.docx");
         if (!response.ok) throw new Error("Failed to load template.docx");
