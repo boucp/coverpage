@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cover Page Generator (.docx)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.5/pizzip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.31.2/docxtemplater.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-6">Cover Page Generator (.docx)</h1>
+
+    <!-- Form -->
+    <div class="bg-white p-6 rounded-lg shadow mb-6">
+      <div class="grid grid-cols-1 gap-4">
+        <input type="text" id="teacher" placeholder="Teacher's Name" class="border p-2 rounded" required />
+        <input type="text" id="student" placeholder="Student's Name" class="border p-2 rounded" required />
+        <input type="text" id="semester" placeholder="Semester" class="border p-2 rounded" required />
+        <input type="text" id="date" placeholder="Date" class="border p-2 rounded" required />
+        <input type="text" id="studentId" placeholder="Student ID" class="border p-2 rounded" required />
+      </div>
+      <div class="mt-4">
+        <button onclick="generateDocx()" class="bg-blue-600 text-white px-4 py-2 rounded">
+          Generate .docx
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function generateDocx() {
+      const teacher = document.getElementById("teacher").value;
+      const student = document.getElementById("student").value;
+      const semester = document.getElementById("semester").value;
+      const date = document.getElementById("date").value;
+      const studentId = document.getElementById("studentId").value;
+
+      // Fetch the template.docx from your GitHub Pages repo
+      try {
+        const response = await fetch("template.docx");
+        if (!response.ok) throw new Error("Failed to load template.docx");
+        const content = await response.arrayBuffer();
+
+        const zip = new PizZip(content);
+        const doc = new window.docxtemplater().loadZip(zip);
+
+        doc.setData({
+          "teacher's name": teacher,
+          "student's name": student,
+          semester: semester,
+          date: date,
+          "student's id": studentId,
+        });
+
+        try {
+          doc.render();
+        } catch (error) {
+          console.error("Error rendering docx:", error);
+          alert("Error filling the template. Check placeholder names.");
+          return;
+        }
+
+        const out = doc.getZip().generate({ type: "blob" });
+        saveAs(out, `CoverPage_${studentId}.docx`);
+      } catch (error) {
+        alert("Error loading template.docx: " + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
