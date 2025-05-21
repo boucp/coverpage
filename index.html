@@ -1,64 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Cover Page Generator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/pizzip@3.1.5/dist/pizzip.min.js"></script>
-  <script src="https://unpkg.com/docxtemplater@3.31.2/build/docxtemplater.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
-  <div class="max-w-2xl mx-auto">
-    <h1 class="text-3xl font-bold text-center mb-6">Cover Page Generator</h1>
-    <div class="bg-white p-6 rounded-lg shadow mb-6">
-      <div class="grid grid-cols-1 gap-4">
-        <input type="text" id="teacher" placeholder="Teacher's Name" class="border p-2 rounded" />
-        <input type="text" id="student" placeholder="Student's Name" class="border p-2 rounded" />
-        <input type="text" id="semester" placeholder="Semester" class="border p-2 rounded" />
-        <input type="text" id="date" placeholder="Date" class="border p-2 rounded" />
-        <input type="text" id="studentId" placeholder="Student ID" class="border p-2 rounded" />
-      </div>
-      <div class="mt-4">
-        <button onclick="generateDocx()" class="bg-blue-600 text-white px-4 py-2 rounded">Generate .docx</button>
-      </div>
-    </div>
+<body>
+  <h1>Cover Page Generator</h1>
+
+  <form id="cover-form">
+    <input type="text" placeholder="Student Name" id="name" required>
+    <input type="text" placeholder="Student ID" id="student_id" required>
+    <input type="text" placeholder="Course Title" id="course_title" required>
+    <input type="text" placeholder="Course Code" id="course_code" required>
+    <input type="text" placeholder="Semester" id="semester" required>
+    <input type="text" placeholder="Instructor Name" id="instructor" required>
+    <input type="date" id="submission_date" required>
+    <button type="button" onclick="generatePDF()">Download PDF</button>
+  </form>
+
+  <div id="preview">
+    <h2>Assignment Cover Page</h2>
+    <p><strong>Name:</strong> <span id="p_name"></span></p>
+    <p><strong>ID:</strong> <span id="p_student_id"></span></p>
+    <p><strong>Course:</strong> <span id="p_course_title"></span> (<span id="p_course_code"></span>)</p>
+    <p><strong>Semester:</strong> <span id="p_semester"></span></p>
+    <p><strong>Instructor:</strong> <span id="p_instructor"></span></p>
+    <p><strong>Date:</strong> <span id="p_submission_date"></span></p>
   </div>
 
-  <script>
-    async function generateDocx() {
-      const teacher = document.getElementById("teacher").value;
-      const student = document.getElementById("student").value;
-      const semester = document.getElementById("semester").value;
-      const date = document.getElementById("date").value;
-      const studentId = document.getElementById("studentId").value;
-
-      try {
-        const response = await fetch("template.docx");
-        if (!response.ok) throw new Error("template.docx not found");
-        const content = await response.arrayBuffer();
-
-        const zip = new PizZip(content);
-        const doc = new window.docxtemplater().loadZip(zip);
-
-        doc.setData({
-          teacher_name: teacher,
-          student_name: student,
-          semester: semester,
-          date: date,
-          student_id: studentId,
-        });
-
-        doc.render();
-
-        const blob = doc.getZip().generate({ type: "blob" });
-        saveAs(blob, `CoverPage_${studentId}.docx`);
-      } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred: " + error.message);
-      }
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
